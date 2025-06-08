@@ -27,6 +27,11 @@ final class SearchViewModel {
         self.movieService = movieService
     }
     
+    func resetData() {
+        
+        movies.removeAll()
+    }
+    
     func searchMovie(searchString: String) async {
         
         do {

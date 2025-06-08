@@ -12,22 +12,19 @@ class SearchViewController: UIViewController {
     private let searchBar = UISearchBar()
     private let tableView = UITableView()
     private let viewModel = SearchViewModel(movieService: MovieService())
+    private var currentQuery = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupUI()
-        
-        Task {
-            
-            await viewModel.searchMovie(searchString: "Batman")
-        }
     }
     
     
     /// Setup UI, Delegation and Datasource
     private func setupUI() {
         
+        searchBar.showsCancelButton = true
         searchBar.delegate = self
         navigationItem.titleView = searchBar
         
@@ -49,6 +46,28 @@ class SearchViewController: UIViewController {
 
 extension SearchViewController: UISearchBarDelegate {
     
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        guard let query = searchBar.text, !query.isEmpty else {
+            return
+        }
+        currentQuery = query
+        searchBar.resignFirstResponder()
+        
+        viewModel.resetData()
+        Task {
+            await viewModel.searchMovie(searchString: currentQuery)
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        
+        searchBar.text = nil
+        currentQuery = ""
+        searchBar.resignFirstResponder()
+        
+        viewModel.resetData()
+    }
 }
 
 extension SearchViewController: SearchViewModelDelegate {
