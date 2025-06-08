@@ -31,7 +31,15 @@ class MovieTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-    
+
+    override func prepareForReuse() {
+        
+        super.prepareForReuse()
+        
+        posterImageView.image = nil
+        titleLabel.text = nil
+        releaseDateLabel.text = nil
+    }
 
     private func setupUI() {
         
@@ -61,27 +69,10 @@ class MovieTableViewCell: UITableViewCell {
     }
     
     func configure(with movie: Movie, service: MovieServiceProtocol) {
+        
         titleLabel.text = movie.title
         releaseDateLabel.text = "Released: \(movie.releaseDate ?? "")"
         
-        Task {
-            do {
-                let config = try await service.loadConfigIfNeeded()
-                guard let secureBaseUrl = config?.images.secureBaseUrl,
-                      let size = config?.images.posterSizes.last,
-                      let path = movie.posterPath else {
-                    self.posterImageView.image = nil
-                    return
-                }
-                let urlString = "\(secureBaseUrl)\(size)\(path)"
-                ImageCache.shared.loadImage(from: urlString) {[weak self] image in
-                    DispatchQueue.main.async {
-                        self?.posterImageView.image = image
-                    }
-                }
-            } catch {
-                // show error image here
-            }
-        }
+        ImageLoader.loadPoster(for: movie, using: service, into: posterImageView)
     }
 }

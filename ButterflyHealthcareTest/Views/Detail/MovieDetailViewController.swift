@@ -115,25 +115,7 @@ class MovieDetailViewController: UIViewController {
         releaseDateLabel.text = "Released: \(movie.releaseDate ?? "")"
         overViewLabel.text = movie.overview
         
-        Task {
-            do {
-                let config = try await service.loadConfigIfNeeded()
-                guard let secureBaseUrl = config?.images.secureBaseUrl,
-                      let size = config?.images.posterSizes.last,
-                      let path = movie.posterPath else {
-                    self.posterImageView.image = nil
-                    return
-                }
-                let urlString = "\(secureBaseUrl)\(size)\(path)"
-                ImageCache.shared.loadImage(from: urlString) {[weak self] image in
-                    DispatchQueue.main.async {
-                        self?.posterImageView.image = image
-                    }
-                }
-            } catch {
-                // show error image here
-            }
-        }
+        ImageLoader.loadPoster(for: movie, using: service, into: posterImageView)
     }
     
 }

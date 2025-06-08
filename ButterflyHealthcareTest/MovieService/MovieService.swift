@@ -23,7 +23,6 @@ final class MovieService: MovieServiceProtocol {
         components.scheme = "https"
         components.host = "api.themoviedb.org"
         components.path = "/3/search/movie"
-
         
         return components
     }()
@@ -52,6 +51,8 @@ final class MovieService: MovieServiceProtocol {
     }
     
     
+    /// Load  configuration from server or cache
+    /// - Returns: configuration
     func loadConfigIfNeeded() async throws -> ServiceConfiguration? {
         
         if let cachedConfig = ConfigCache.shared.config {
@@ -70,6 +71,7 @@ final class MovieService: MovieServiceProtocol {
         let request = URLRequest(url: url)
         let config = try await NetworkManager.shared.execute(request: request, expecting: ServiceConfiguration.self)
         ConfigCache.shared.config = config
+        
         return config
     }
     
