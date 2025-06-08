@@ -11,6 +11,7 @@ import CoreData
 protocol SearchViewModelDelegate:NSObject {
     func onMoviesUpdated()
     func onLoadingStateChanged(isLoading: Bool)
+    func onError(message: String)
 }
 
 final class SearchViewModel {
@@ -81,10 +82,15 @@ final class SearchViewModel {
                 currentPage += 1
             }
         } catch {
-            if error is APIError {
-                print((error as! APIError).customDescription)
+            let errorMessage: String
+            if let apiErrpr = error as? APIError {
+                errorMessage = apiErrpr.customDescription
             } else {
-                print(error.localizedDescription)
+                errorMessage = error.localizedDescription
+            }
+            
+            await MainActor.run {
+                delegate?.onError(message: errorMessage)
             }
         }
     }

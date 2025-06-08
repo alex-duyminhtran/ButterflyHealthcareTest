@@ -11,7 +11,7 @@ import UIKit
 /// Provide helper metthos
 extension UIViewController {
     
-    func showOfflineSnackbar(message: String) {
+    func showErrorSnackbar(message: String) {
         
         let label = UILabel()
         label.text = message
@@ -36,5 +36,12 @@ extension UIViewController {
             }
 
         }
+    }
+    
+    func showErrorAlert(message: String) {
+        
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }

@@ -103,7 +103,7 @@ extension SearchViewController: UISearchBarDelegate {
         } else {
             // no internet connection
             showOfflineData = true
-            showOfflineSnackbar(message: "No internet connection. Showing cached results!")
+            showErrorSnackbar(message: "No internet connection. Showing cached results!")
             viewModel.loadCachedMovies(for: currentQuery)
         }
     }
@@ -134,6 +134,11 @@ extension SearchViewController: SearchViewModelDelegate {
         } else {
             loadingFooter.stopAnimating()
         }
+    }
+    
+    func onError(message: String) {
+        
+        showErrorAlert(message: message)
     }
 }
 
