@@ -14,7 +14,7 @@ protocol SearchViewModelDelegate:NSObject {
     func onError(message: String)
 }
 
-final class SearchViewModel {
+public final class SearchViewModel {
     
     private let movieService: MovieServiceProtocol
     
@@ -26,9 +26,9 @@ final class SearchViewModel {
         }
     }
     
-    private var currentPage = 1
-    private var isLoading = false
-    private var totalPages = 1
+    private(set) var currentPage = 1
+    private(set) var isLoading = false
+    private(set) var totalPages = 1
     
     init(movieService: MovieServiceProtocol = MovieService()) {
         self.movieService = movieService
