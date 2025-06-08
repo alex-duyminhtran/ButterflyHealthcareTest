@@ -34,7 +34,6 @@ class MovieDetailViewController: UIViewController {
         view.backgroundColor = .systemBackground
         setupUI()
         configureWithMovie()
-        setupFavoriteButton()
     }
     
     private func setupUI() {
@@ -95,18 +94,6 @@ class MovieDetailViewController: UIViewController {
             overViewLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
             overViewLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20)
         ])
-    }
-
-    private func setupFavoriteButton() {
-        
-        let isFavorite = false
-        let heartImage = isFavorite ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart")
-        let heartButton = UIBarButtonItem(image: heartImage, style: .plain, target: self, action: #selector(favoriteTapped))
-        navigationItem.rightBarButtonItem = heartButton
-    }
-    
-    @objc private func favoriteTapped() {
-        
     }
     
     private func configureWithMovie() {
