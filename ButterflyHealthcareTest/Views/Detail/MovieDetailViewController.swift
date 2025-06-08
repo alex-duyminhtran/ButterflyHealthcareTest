@@ -102,7 +102,15 @@ class MovieDetailViewController: UIViewController {
         releaseDateLabel.text = "Released: \(movie.releaseDate ?? "")"
         overViewLabel.text = movie.overview
         
-        ImageLoader.loadPoster(for: movie, using: service, into: posterImageView)
+        ImageLoader.loadPoster(for: movie, using: service) { [weak self] image in
+            DispatchQueue.main.async {
+                if image != nil {
+                    self?.posterImageView.image = image
+                } else {
+                    self?.posterImageView.image = UIImage(named: "NoImageAvailable")
+                }
+            }
+        }
     }
     
 }

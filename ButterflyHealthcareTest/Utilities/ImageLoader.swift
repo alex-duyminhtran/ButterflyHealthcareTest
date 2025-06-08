@@ -10,50 +10,37 @@ import UIKit
 
 final class ImageLoader {
     
-    /// Load image for Movie
+    /// Load poster image for a movie asynchronously using a completion handler.
     /// - Parameters:
-    ///   - movie: movie object
-    ///   - service: service to load image data
-    ///   - imageView: UIImageView
-    ///   - imagePlaceholder: placeholder for the UIImageView
+    ///   - movie: The movie to load the poster for.
+    ///   - service: The service used to fetch configuration data.
+    ///   - completion: A closure returning the image or `nil` if loading failed.
     static func loadPoster(for movie: Movie,
                            using service: MovieServiceProtocol,
-                           into imageView: UIImageView,
-                           imagePlaceholder: UIImage? =  UIImage(named: "NoImageAvailable")) {
-        
+                           completion: @escaping (UIImage?) -> Void) {
         
         guard let posterPath = movie.posterPath else {
-            DispatchQueue.main.async {
-                imageView.image = imagePlaceholder
-            }
+            completion(nil)
             return
         }
-        
+
         Task {
             do {
                 let config = try await service.loadConfigIfNeeded()
+                
                 guard let secureBaseUrl = config?.images.secureBaseUrl,
                       let size = config?.images.posterSizes.last else {
-                    DispatchQueue.main.async {
-                        imageView.image = imagePlaceholder
-                    }
+                        completion(nil)
                     return
                 }
                 
                 let urlString = "\(secureBaseUrl)\(size)\(posterPath)"
                 ImageCache.shared.loadImage(from: urlString) { image in
-                    DispatchQueue.main.async {
-                        if image != nil {
-                            imageView.image = image
-                        } else {
-                            imageView.image = imagePlaceholder
-                        }
-                    }
+                    completion(image)
                 }
+                
             } catch {
-                DispatchQueue.main.async {
-                    imageView.image = imagePlaceholder
-                }
+                completion(nil)
             }
         }
     }

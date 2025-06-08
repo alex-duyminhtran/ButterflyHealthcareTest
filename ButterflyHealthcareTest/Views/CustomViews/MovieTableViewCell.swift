@@ -14,6 +14,8 @@ class MovieTableViewCell: UITableViewCell {
     let posterImageView = UIImageView()
     let titleLabel = UILabel()
     let releaseDateLabel = UILabel()
+   
+    private var currentImageLoadId = UUID()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -36,9 +38,11 @@ class MovieTableViewCell: UITableViewCell {
         
         super.prepareForReuse()
         
-        posterImageView.image = nil
         titleLabel.text = nil
         releaseDateLabel.text = nil
+
+        // Invalidate current image load id to ignore old completions
+        currentImageLoadId = UUID()
     }
 
     private func setupUI() {
@@ -73,6 +77,26 @@ class MovieTableViewCell: UITableViewCell {
         titleLabel.text = movie.title
         releaseDateLabel.text = "Released: \(movie.releaseDate ?? "")"
         
-        ImageLoader.loadPoster(for: movie, using: service, into: posterImageView)
+        let loadId = UUID()
+        currentImageLoadId = loadId
+        self.posterImageView.image = nil
+        
+        ImageLoader.loadPoster(for: movie, using: service) { [weak self] image in
+            
+            guard let self = self else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+                if self.currentImageLoadId == loadId {
+                    // Only update if this is the latest request
+                    if image != nil {
+                        self.posterImageView.image = image
+                    } else {
+                        self.posterImageView.image = UIImage(named: "NoImageAvailable")
+                    }
+                }
+            }
+        }
     }
 }
