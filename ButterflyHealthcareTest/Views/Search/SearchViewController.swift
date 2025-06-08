@@ -12,6 +12,7 @@ class SearchViewController: UIViewController {
     private let searchBar = UISearchBar()
     private let tableView = UITableView()
     private let loadingFooter = UIActivityIndicatorView(style: .medium)
+    private let emptyStateLabel =  UILabel()
     
     private let viewModel = SearchViewModel(movieService: MovieService())
     private var currentQuery = ""
@@ -46,8 +47,20 @@ class SearchViewController: UIViewController {
         
         loadingFooter.hidesWhenStopped = true
         tableView.tableFooterView = loadingFooter
+        
+        emptyStateLabel.text = "No movies found!"
+        emptyStateLabel.textAlignment = .center
+        emptyStateLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        emptyStateLabel.isHidden = true
+        emptyStateLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emptyStateLabel)
+        NSLayoutConstraint.activate([
+            emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
     
+    /// Loading more movies when scrolling down
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
         let position = scrollView.contentOffset.y
@@ -75,6 +88,7 @@ extension SearchViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         
         viewModel.resetData()
+        emptyStateLabel.isHidden = true
         Task {
             await viewModel.searchMovie(searchString: currentQuery, isNewQuery: true)
         }
@@ -87,6 +101,7 @@ extension SearchViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         
         viewModel.resetData()
+        emptyStateLabel.isHidden = true
     }
 }
 
@@ -94,11 +109,13 @@ extension SearchViewController: SearchViewModelDelegate {
     
     func onMoviesUpdated() {
         tableView.reloadData()
+        emptyStateLabel.isHidden = !viewModel.movies.isEmpty
     }
     
     func onLoadingStateChanged(isLoading: Bool) {
         
         if isLoading {
+            emptyStateLabel.isHidden = true
             loadingFooter.startAnimating()
         } else {
             loadingFooter.stopAnimating()

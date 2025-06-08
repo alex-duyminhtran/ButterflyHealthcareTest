@@ -32,6 +32,7 @@ final class SearchViewModel {
         self.movieService = movieService
     }
     
+    /// Reset data for fresh search
     func resetData() {
         
         movies.removeAll()
@@ -40,6 +41,10 @@ final class SearchViewModel {
         isLoading = false
     }
     
+    /// Search movies
+    /// - Parameters:
+    ///   - searchString: searching input from user
+    ///   - isNewQuery: to indicate whether it is fresh search or loading more
     func searchMovie(searchString: String, isNewQuery: Bool) async {
         
         guard !isLoading else {
