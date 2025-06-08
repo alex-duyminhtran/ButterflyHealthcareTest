@@ -9,6 +9,7 @@ import Foundation
 
 protocol SearchViewModelDelegate:NSObject {
     func onMoviesUpdated()
+    func onLoadingStateChanged(isLoading: Bool)
 }
 
 final class SearchViewModel {
@@ -23,6 +24,10 @@ final class SearchViewModel {
         }
     }
     
+    private var currentPage = 1
+    private var isLoading = false
+    private var totalPages = 1
+    
     init(movieService: MovieServiceProtocol = MovieService()) {
         self.movieService = movieService
     }
@@ -30,17 +35,43 @@ final class SearchViewModel {
     func resetData() {
         
         movies.removeAll()
+        currentPage = 1
+        totalPages = 1
+        isLoading = false
     }
     
-    func searchMovie(searchString: String) async {
+    func searchMovie(searchString: String, isNewQuery: Bool) async {
+        
+        guard !isLoading else {
+            return
+        }
+        guard currentPage <= totalPages else {
+            return
+        }
+        
+        isLoading = true
+        await MainActor.run {
+            delegate?.onLoadingStateChanged(isLoading: isLoading)
+        }
+        
+        defer {
+            /// when everything is done
+            isLoading = false
+            Task { @MainActor in
+                delegate?.onLoadingStateChanged(isLoading: isLoading)
+            }
+        }
         
         do {
-            let movies = try await movieService.searchMovie(searchString: searchString, page: 1)
-            print("count: \(String(describing: movies?.count))")
-            if let movies = movies {
-                await MainActor.run {
-                    self.movies.append(contentsOf: movies)
+            let searchResult = try await movieService.searchMovie(searchString: searchString, page: currentPage)
+            await MainActor.run {
+                if isNewQuery {
+                    movies = searchResult?.results ?? []
+                } else {
+                    movies.append(contentsOf: searchResult?.results ?? [])
                 }
+                totalPages = searchResult?.totalPages ?? 0
+                currentPage += 1
             }
         } catch {
             if error is APIError {

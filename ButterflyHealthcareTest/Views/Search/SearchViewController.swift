@@ -11,6 +11,8 @@ class SearchViewController: UIViewController {
 
     private let searchBar = UISearchBar()
     private let tableView = UITableView()
+    private let loadingFooter = UIActivityIndicatorView(style: .medium)
+    
     private let viewModel = SearchViewModel(movieService: MovieService())
     private var currentQuery = ""
     
@@ -41,6 +43,24 @@ class SearchViewController: UIViewController {
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+        
+        loadingFooter.hidesWhenStopped = true
+        tableView.tableFooterView = loadingFooter
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        let position = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let scrollViewHeight = scrollView.frame.size.height
+        
+        if position > (contentHeight - scrollViewHeight - 100)
+            && !viewModel.movies.isEmpty {
+            // load next page
+            Task {
+                await viewModel.searchMovie(searchString: currentQuery, isNewQuery: false)
+            }
+        }
     }
 }
 
@@ -56,7 +76,7 @@ extension SearchViewController: UISearchBarDelegate {
         
         viewModel.resetData()
         Task {
-            await viewModel.searchMovie(searchString: currentQuery)
+            await viewModel.searchMovie(searchString: currentQuery, isNewQuery: true)
         }
     }
     
@@ -71,8 +91,18 @@ extension SearchViewController: UISearchBarDelegate {
 }
 
 extension SearchViewController: SearchViewModelDelegate {
+    
     func onMoviesUpdated() {
         tableView.reloadData()
+    }
+    
+    func onLoadingStateChanged(isLoading: Bool) {
+        
+        if isLoading {
+            loadingFooter.startAnimating()
+        } else {
+            loadingFooter.stopAnimating()
+        }
     }
 }
 

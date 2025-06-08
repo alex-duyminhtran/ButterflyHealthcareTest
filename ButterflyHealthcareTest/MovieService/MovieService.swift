@@ -8,7 +8,7 @@
 import Foundation
 
 protocol MovieServiceProtocol {
-    func searchMovie(searchString: String, page: Int) async throws -> [Movie]?
+    func searchMovie(searchString: String, page: Int) async throws -> MovieSearchResult?
     func loadConfigIfNeeded() async throws -> ServiceConfiguration?
 }
 
@@ -33,7 +33,7 @@ final class MovieService: MovieServiceProtocol {
     ///   - searchString: the search input
     ///   - page: current page
     /// - Returns: number of movies for the current page
-    func searchMovie(searchString: String, page: Int) async throws -> [Movie]? {
+    func searchMovie(searchString: String, page: Int) async throws -> MovieSearchResult? {
         
         var components = baseUrlComponents
         components.path = "/3/search/movie"
@@ -48,7 +48,7 @@ final class MovieService: MovieServiceProtocol {
         let request = URLRequest(url: url)
         let result = try await NetworkManager.shared.execute(request: request, expecting: MovieSearchResult.self)
         
-        return result.results
+        return result
     }
     
     
