@@ -41,6 +41,7 @@ class MovieTableViewCell: UITableViewCell {
         }
         posterImageView.contentMode = .scaleAspectFit
         titleLabel.numberOfLines = 2
+        releaseDateLabel.textColor = .gray
         
         NSLayoutConstraint.activate([
             posterImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 15),
