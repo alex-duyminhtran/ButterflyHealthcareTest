@@ -14,9 +14,21 @@ class SearchViewController: UIViewController {
     private let loadingFooter = UIActivityIndicatorView(style: .medium)
     private let emptyStateLabel =  UILabel()
     
-    private let viewModel = SearchViewModel(movieService: MovieService())
+    private let movieService:MovieServiceProtocol
+    private let viewModel:SearchViewModel
     private var currentQuery = ""
     private var showOfflineData = false
+    
+    init(movieService: MovieServiceProtocol) {
+        
+        self.movieService = movieService
+        viewModel = SearchViewModel(movieService: movieService)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -153,7 +165,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
         
         let movie = viewModel.movies[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: MovieTableViewCell.identifier) as! MovieTableViewCell
-        cell.configure(with: movie, service: MovieService())
+        cell.configure(with: movie, service: movieService)
         
         return cell
     }
@@ -161,7 +173,7 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let selectedMovie = viewModel.movies[indexPath.row]
-        let detailVC = MovieDetailViewController(movie: selectedMovie, service: MovieService())
+        let detailVC = MovieDetailViewController(movie: selectedMovie, service: movieService)
         navigationController?.pushViewController(detailVC, animated: true)
     }
 }
