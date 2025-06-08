@@ -14,6 +14,7 @@ class MovieTableViewCell: UITableViewCell {
     let posterImageView = UIImageView()
     let titleLabel = UILabel()
     let releaseDateLabel = UILabel()
+    let loadingIndicator = UIActivityIndicatorView(style: .medium)
    
     private var currentImageLoadId = UUID()
     
@@ -70,6 +71,15 @@ class MovieTableViewCell: UITableViewCell {
             releaseDateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             
         ])
+        
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(loadingIndicator)
+        loadingIndicator.hidesWhenStopped = true
+
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerXAnchor.constraint(equalTo: posterImageView.centerXAnchor),
+            loadingIndicator.centerYAnchor.constraint(equalTo: posterImageView.centerYAnchor),
+        ])
     }
     
     func configure(with movie: Movie, service: MovieServiceProtocol) {
@@ -80,13 +90,13 @@ class MovieTableViewCell: UITableViewCell {
         let loadId = UUID()
         currentImageLoadId = loadId
         self.posterImageView.image = nil
+        loadingIndicator.startAnimating()  // Start animating when loading begins
         
         ImageLoader.loadPoster(for: movie, using: service) { [weak self] image in
             
             guard let self = self else {
                 return
             }
-            
             DispatchQueue.main.async {
                 if self.currentImageLoadId == loadId {
                     // Only update if this is the latest request
@@ -96,6 +106,7 @@ class MovieTableViewCell: UITableViewCell {
                         self.posterImageView.image = UIImage(named: "NoImageAvailable")
                     }
                 }
+                self.loadingIndicator.stopAnimating()  // Stop animating when finished
             }
         }
     }
