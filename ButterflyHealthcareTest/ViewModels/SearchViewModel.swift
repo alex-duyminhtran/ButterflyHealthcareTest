@@ -99,7 +99,7 @@ final class SearchViewModel {
         
         // Remove old search results for this query
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = CDMovie.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "query == %@", searchString)
+        fetchRequest.predicate = NSPredicate(format: "query CONTAINS[c] %@", searchString)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         _ = try? context.execute(deleteRequest)
         

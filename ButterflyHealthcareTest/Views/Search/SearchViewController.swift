@@ -16,6 +16,7 @@ class SearchViewController: UIViewController {
     
     private let viewModel = SearchViewModel(movieService: MovieService())
     private var currentQuery = ""
+    private var showOfflineData = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,6 +64,10 @@ class SearchViewController: UIViewController {
     /// Loading more movies when scrolling down
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
+        if showOfflineData {
+            return
+        }
+        
         let position = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let scrollViewHeight = scrollView.frame.size.height
@@ -89,8 +94,17 @@ extension SearchViewController: UISearchBarDelegate {
         
         viewModel.resetData()
         emptyStateLabel.isHidden = true
-        Task {
-            await viewModel.searchMovie(searchString: currentQuery, isNewQuery: true)
+        
+        if NetworkMonitor.shared.isConnected {
+            showOfflineData = false
+            Task {
+                await viewModel.searchMovie(searchString: currentQuery, isNewQuery: true)
+            }
+        } else {
+            // no internet connection
+            showOfflineData = true
+            showOfflineSnackbar(message: "No internet connection. Showing cached results!")
+            viewModel.loadCachedMovies(for: currentQuery)
         }
     }
     

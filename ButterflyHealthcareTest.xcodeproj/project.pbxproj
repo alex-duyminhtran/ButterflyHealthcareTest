@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		BAB3BD532DF5555C0075C182 /* Reachability in Frameworks */ = {isa = PBXBuildFile; productRef = BAB3BD522DF5555C0075C182 /* Reachability */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		BAB3BA622DF40F780075C182 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BAB3BD532DF5555C0075C182 /* Reachability in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +130,7 @@
 			);
 			name = ButterflyHealthcareTest;
 			packageProductDependencies = (
+				BAB3BD522DF5555C0075C182 /* Reachability */,
 			);
 			productName = ButterflyHealthcareTest;
 			productReference = BAB3BA4B2DF40F770075C182 /* ButterflyHealthcareTest.app */;
@@ -208,6 +214,9 @@
 			);
 			mainGroup = BAB3BA422DF40F770075C182;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				BAB3BD512DF5555C0075C182 /* XCRemoteSwiftPackageReference "Reachability" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BAB3BA4C2DF40F770075C182 /* Products */;
 			projectDirPath = "";
@@ -561,6 +570,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BAB3BD512DF5555C0075C182 /* XCRemoteSwiftPackageReference "Reachability" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ashleymills/Reachability.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BAB3BD522DF5555C0075C182 /* Reachability */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BAB3BD512DF5555C0075C182 /* XCRemoteSwiftPackageReference "Reachability" */;
+			productName = Reachability;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = BAB3BA432DF40F770075C182 /* Project object */;
 }
