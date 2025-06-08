@@ -30,6 +30,7 @@ class SearchViewController: UIViewController {
         
         searchBar.showsCancelButton = true
         searchBar.delegate = self
+        searchBar.placeholder = "Search movies"
         navigationItem.titleView = searchBar
         
         viewModel.delegate = self
