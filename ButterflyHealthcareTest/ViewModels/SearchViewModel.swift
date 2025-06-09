@@ -105,7 +105,7 @@ public final class SearchViewModel {
         
         // Remove old search results for this query
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = CDMovie.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "query CONTAINS[c] %@", searchString)
+        fetchRequest.predicate = NSPredicate(format: "title CONTAINS[c] %@", searchString)
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         _ = try? context.execute(deleteRequest)
         
@@ -130,7 +130,7 @@ public final class SearchViewModel {
         
         let context = CoreDataManager.shared.context
         let request: NSFetchRequest<CDMovie> = CDMovie.fetchRequest()
-        request.predicate = NSPredicate(format: "query CONTAINS[c] %@", searchString)
+        request.predicate = NSPredicate(format: "title CONTAINS[c] %@", searchString)
         
         do {
             let results = try context.fetch(request)
